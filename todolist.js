@@ -31,97 +31,101 @@ function createId(){
     return uniqueId
 }
 
-function createToDoDesk(){
-    data.sort((a, b) =>{
-        return a.id - b.id
-    })
-    toDoDesk.innerHTML = `Список задач`;
-    data.forEach(arrayElement => {
-        if(arrayElement.status === 0){
-            toDoDesk.innerHTML += `
-            <div class="to-do-card">
-            <p>${arrayElement.taskName}</p>
-            <p>${arrayElement.taskDescription}</p>
-            <button class ='btn-edit', id="${arrayElement.id}">✍</button>
-            <button class ='btn-next', id="${arrayElement.id}">➱</button>
-            <button class ='btn-delete', id="${arrayElement.id}">🗑️</button>
-            </div>`
-        }       
-    })
+
+function createCards(arrayElement, status){
+    let btnNext= ``
+    if(status < 2){
+        btnNext = `<button class ='btn-next', id="${arrayElement.id}">➱</button>`
+    } else {
+        btnNext = ``;
+    }
+    let card = `<div class="card">
+    <p>${arrayElement.taskName}</p>
+    <p>${arrayElement.taskDescription}</p>
+    <button class ='btn-edit', id="${arrayElement.id}">✍</button>
+    ${btnNext}
+    <button class ='btn-delete', id="${arrayElement.id}">🗑️</button>
+    </div>`    
+    return card
 }
 
-function createInProgressDesk(){
-    data.sort((a, b) =>{
-        return a.queueProgress - b.queueProgress
-    })
+function createDesks(status){
+    if(status === 0){
+        data.sort((a, b) =>{
+            return b.id - a.id
+        })
+        toDoDesk.innerHTML = `Список задач`;
+        data.forEach(arrayElement => {
+            if(arrayElement.status === 0){
+                toDoDesk.innerHTML += createCards(arrayElement, status)
+            }   
+            
+        })
 
-    inProgressDesk.innerHTML = `Задачи в процессе`;
-    data.forEach(arrayElement => {
-        if(arrayElement.status === 1){
-            inProgressDesk.innerHTML += `
-            <div class="in-progress-desk">
-            <p>${arrayElement.taskName}</p>
-            <p>${arrayElement.taskDescription}</p>
-            <button class ='btn-edit', id="${arrayElement.id}">✍</button>
-            <button class ='btn-next', id="${arrayElement.id}">➱</button>
-            <button class ='btn-delete', id="${arrayElement.id}">🗑️</button>
-            </div>`
-        }       
-    })
-
+    } else if (status === 1){
+        data.sort((a, b) =>{
+            return b.queueProgress - a.queueProgress
+        })
+        inProgressDesk.innerHTML = `Задачи в процессе`;
+        data.forEach(arrayElement => {
+            if(arrayElement.status === 1){
+                inProgressDesk.innerHTML += createCards(arrayElement, status)
+            }       
+        })
+       
+    } else if (status === 2){
+        data.sort((a, b) =>{
+            return b.queueDone - a.queueDone
+        })
+        doneDesk.innerHTML = `Выполненные задачи`;
+        data.forEach(arrayElement => {
+            if(arrayElement.status === 2){
+                doneDesk.innerHTML += createCards(arrayElement, status)
+            }       
+        })
+    } else if (status === 3){
+        data.sort((a, b) =>{
+            return b.queueDeleted - a.queueDeleted
+        })
+        deletedDesk.innerHTML = `Удаленные задачи`;
+        data.forEach(arrayElement => {
+            if(arrayElement.status === 3){
+                deletedDesk.innerHTML += createCards(arrayElement, status)
+            }       
+        })
+    }
+    
+    
     data.sort((a, b) =>{
-        return a.id - b.id
+        return b.id - a.id
     })
 }
-
-
-function createDoneDesk(){
-    data.sort((a, b) =>{
-        return a.queueDone - b.queueDone
-    })
-
-    doneDesk.innerHTML = `Выполненные задачи`;
-    data.forEach(arrayElement => {
-        if(arrayElement.status === 2){
-            doneDesk.innerHTML += `
-            <div class="in-progress-desk">
-            <p>${arrayElement.taskName}</p>
-            <p>${arrayElement.taskDescription}</p>
-            <button class ='btn-edit', id="${arrayElement.id}">✍</button>
-            <button class ='btn-next', id="${arrayElement.id}">➱</button>
-            <button class ='btn-delete', id="${arrayElement.id}">🗑️</button>
-            </div>`
-        }       
-    })
-
-    data.sort((a, b) =>{
-        return a.id - b.id
-    })
-}
-
-
-
 
 
 
 function moveTask(idValue, isFirtsMove){
-    if(isFirtsMove){
-        data.forEach(arrayElement =>{
-            if (arrayElement.id === +idValue){
-                arrayElement.previousStatus = arrayElement.status
-                arrayElement.status = arrayElement.status + 1;
-                arrayElement.queueProgress = increaseQueueProgress();
-            }
-        })
-    } else {
-        data.forEach(arrayElement =>{
-            if (arrayElement.id === +idValue){
-                arrayElement.previousStatus = arrayElement.status
-                arrayElement.status = arrayElement.status + 1;
+    data.forEach(arrayElement =>{
+        if (arrayElement.id === +idValue){
+            arrayElement.previousStatus = arrayElement.status;
+            arrayElement.status = arrayElement.status + 1;
+            if(isFirtsMove){
+                arrayElement.queueProgress = increaseQueueProgress();  
+            } else {
                 arrayElement.queueDone = increaseQueueDone();
             }
+        }
         })
-    }
+    
+}
+
+function deleteTask(idValue){
+    data.forEach(arrayElement =>{
+        if(arrayElement.id === +idValue){
+            arrayElement.previousStatus = arrayElement.status;
+            arrayElement.status = 3;
+            arrayElement.queueDeleted = increaseQueueDeleted();
+        }
+    })
 }
 
 function increaseQueueProgress(){
@@ -134,22 +138,17 @@ function increaseQueueDone(){
     return queueDone
 }
 
-
-
-
-
-
-
-
-
+function increaseQueueDeleted(){
+    queueDeleted++
+    return queueDeleted
+}
 
 
 
 btnSubmit.addEventListener('click', (event) =>{
     event.preventDefault();
     addData(taskName.value, taskDescription.value);
-    console.log(data)
-    createToDoDesk();
+    createDesks(0);
 })
 
 
@@ -171,18 +170,17 @@ desk.addEventListener('click', (event) =>{
             console.log('deleted desk')
         }
  
-        // let btn = event.target.closest('.btn-edit')
-        // console.log(btn.id)
+        
     } else if (event.target.closest('.btn-next')){
         console.log('next')
         if(event.target.closest('#to-do-desk')){
             moveTask((event.target.closest('.btn-next')).id, true)
-            createToDoDesk();
-            createInProgressDesk();
+            createDesks(0);
+            createDesks(1);
         } else if (event.target.closest('#in-progress-desk')){
             moveTask((event.target.closest('.btn-next')).id, false)
-            createInProgressDesk();
-            createDoneDesk();
+            createDesks(1);
+            createDesks(2);
         } else if (event.target.closest('#done-desk')){
             console.log('done desk')
         } else if (event.target.closest('#deleted-desk')){
@@ -193,11 +191,17 @@ desk.addEventListener('click', (event) =>{
         console.log('delete')
 
         if(event.target.closest('#to-do-desk')){
-            console.log('to do desk')
+            deleteTask((event.target.closest('.btn-delete')).id)
+            createDesks(0);
+            createDesks(3);
         } else if (event.target.closest('#in-progress-desk')){
-            console.log('progress desk')
+            deleteTask((event.target.closest('.btn-delete')).id)
+            createDesks(1);
+            createDesks(3);
         } else if (event.target.closest('#done-desk')){
-            console.log('done desk')
+            deleteTask((event.target.closest('.btn-delete')).id)
+            createDesks(2);
+            createDesks(3);
         } else if (event.target.closest('#deleted-desk')){
             console.log('deleted desk')
         }
@@ -206,3 +210,91 @@ desk.addEventListener('click', (event) =>{
 })
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// function createToDoDesk(){
+//     data.sort((a, b) =>{
+//         return b.id - a.id
+//     })
+//     toDoDesk.innerHTML = `Список задач`;
+//     data.forEach(arrayElement => {
+//         if(arrayElement.status === 0){
+//             toDoDesk.innerHTML += `
+//             <div class="card">
+//             <p>${arrayElement.taskName}</p>
+//             <p>${arrayElement.taskDescription}</p>
+//             <button class ='btn-edit', id="${arrayElement.id}">✍</button>
+//             <button class ='btn-next', id="${arrayElement.id}">➱</button>
+//             <button class ='btn-delete', id="${arrayElement.id}">🗑️</button>
+//             </div>`
+//         }       
+//     })
+// }
+
+
+// function createInProgressDesk(){
+//     data.sort((a, b) =>{
+//         return b.queueProgress - a.queueProgress
+//     })
+
+//     inProgressDesk.innerHTML = `Задачи в процессе`;
+//     data.forEach(arrayElement => {
+//         if(arrayElement.status === 1){
+//             inProgressDesk.innerHTML += `
+//             <div class="in-progress-desk">
+//             <p>${arrayElement.taskName}</p>
+//             <p>${arrayElement.taskDescription}</p>
+//             <button class ='btn-edit', id="${arrayElement.id}">✍</button>
+//             <button class ='btn-next', id="${arrayElement.id}">➱</button>
+//             <button class ='btn-delete', id="${arrayElement.id}">🗑️</button>
+//             </div>`
+//         }       
+//     })
+
+//     data.sort((a, b) =>{
+//         return b.id - a.id
+//     })
+// }
+
+
+// function createDoneDesk(){
+//     data.sort((a, b) =>{
+//         return b.queueDone - a.queueDone
+//     })
+
+//     doneDesk.innerHTML = `Выполненные задачи`;
+//     data.forEach(arrayElement => {
+//         if(arrayElement.status === 2){
+//             doneDesk.innerHTML += `
+//             <div class="in-progress-desk">
+//             <p>${arrayElement.taskName}</p>
+//             <p>${arrayElement.taskDescription}</p>
+//             <button class ='btn-edit', id="${arrayElement.id}">✍</button>
+//             <button class ='btn-next', id="${arrayElement.id}">➱</button>
+//             <button class ='btn-delete', id="${arrayElement.id}">🗑️</button>
+//             </div>`
+//         }       
+//     })
+
+//     data.sort((a, b) =>{
+//         return b.id - a.id
+//     })
+// }
