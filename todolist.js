@@ -22,7 +22,8 @@ function addData(taskNameValue, taskDescriptionValue){
         queueDone: 0,
         queueDeleted: 0,
         taskName: taskNameValue,
-        taskDescription: taskDescriptionValue
+        taskDescription: taskDescriptionValue,
+        isGettingChanged: false
     })
 }
 
@@ -33,19 +34,35 @@ function createId(){
 
 
 function createCards(arrayElement, status){
-    let btnNext= ``
+    let btnNext= ``;
+    let btnDelete =``;
+    let btnErase = ``;
+
     if(status < 2){
         btnNext = `<button class ='btn-next', id="${arrayElement.id}">➱</button>`
     } else {
         btnNext = ``;
     }
-    let card = `<div class="card">
-    <p>${arrayElement.taskName}</p>
-    <p>${arrayElement.taskDescription}</p>
-    <button class ='btn-edit', id="${arrayElement.id}">✍</button>
-    ${btnNext}
-    <button class ='btn-delete', id="${arrayElement.id}">🗑️</button>
-    </div>`    
+
+    if(status <= 2){
+        btnDelete = `<button class ='btn-delete', id="${arrayElement.id}">🗑️</button>`
+    } else {
+        btnErase = `<button class ='btn-erase', id="${arrayElement.id}">❌</button>`
+    }
+
+    if(arrayElement.isGettingChanged){
+
+    } else {
+        let card = `<div class="card">
+        <p>${arrayElement.taskName}</p>
+        <p>${arrayElement.taskDescription}</p>
+        <button class ='btn-edit', id="${arrayElement.id}">✍</button>
+        ${btnNext}
+        ${btnDelete}
+        ${btnErase}
+        </div>`  
+    }
+      
     return card
 }
 
@@ -128,6 +145,19 @@ function deleteTask(idValue){
     })
 }
 
+
+function editTask(idValue){
+    data.forEach(arrayElement =>{
+        if(arrayElement.id === +idValue){
+            let status = arrayElement.status;
+            let taskName = arrayElement.taskName;
+            let taskDescription = arrayElement.taskDescription;
+            let id = arrayElement.id;
+            arrayElement.isGettingChanged = true;
+        }
+    })
+}
+
 function increaseQueueProgress(){
     queueProgress++
     return queueProgress;
@@ -148,7 +178,10 @@ function increaseQueueDeleted(){
 btnSubmit.addEventListener('click', (event) =>{
     event.preventDefault();
     addData(taskName.value, taskDescription.value);
+    let start = Date.now()
     createDesks(0);
+    let end = Date.now()
+    console.log(`Цикл отработал за ${end - start} миллисекунд` )
 })
 
 
@@ -211,10 +244,16 @@ desk.addEventListener('click', (event) =>{
 
 
 
+// function x(){
+//     let start = Date.now()
+//     for(let i = 0; i < 1000; i++){
+//         addData();
+//     }
+//     let end = Date.now()
+//     console.log(`Цикл отработал за ${end - start} миллисекунд` )
+// }
 
-
-
-
+// x();
 
 
 
