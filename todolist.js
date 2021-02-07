@@ -49,20 +49,8 @@ function createCards(arrayElement, status){
     } else {
         btnErase = `<button class ='btn-erase', id="${arrayElement.id}">❌</button>`
     }
-
-    if(arrayElement.isGettingChanged){
-
-    } else {
-        let card = `<div class="card">
-        <p>${arrayElement.taskName}</p>
-        <p>${arrayElement.taskDescription}</p>
-        <button class ='btn-edit', id="${arrayElement.id}">✍</button>
-        ${btnNext}
-        ${btnDelete}
-        ${btnErase}
-        </div>`  
-    }
-      
+  
+    
     return card
 }
 

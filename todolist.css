@@ -1,3 +1,12 @@
+/* @font-face {
+    font-family: KungFont; 
+    src: url(./Kungfont-Regular.otf);
+}
+  
+*{
+    font-family: KungFont;
+} */
+
 #desk-form{
     margin-top: 5%;
     text-align: center;
@@ -35,3 +44,12 @@
     border: 1px solid black;
     /* text-align: center; */
 }
+
+body{
+    background-size: cover;
+}
+
+.card{
+    border: 1px solid black
+}
+
