@@ -22,25 +22,25 @@
 }
 
 #to-do-desk{
-    width: 25%;
+    /* width: 25%; */
     border: 1px solid black;
     /* text-align: center; */
 }
 
 #in-progress-desk{
-    width: 25%;
+    /* width: 25%; */
     border: 1px solid black;
     /* text-align: center; */
 }
 
 #done-desk{
-    width: 25%;
+    /* width: 25%; */
     border: 1px solid black;
     /* text-align: center; */
 }
 
 #deleted-desk{
-    width: 25%;
+    /* width: 25%; */
     border: 1px solid black;
     /* text-align: center; */
 }
@@ -53,3 +53,7 @@ body{
     border: 1px solid black
 }
 
+.x{
+    width: 25%;
+    border: 1px solid black;
+}

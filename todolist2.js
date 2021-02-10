@@ -11,74 +11,77 @@ let dataInProgressDesk = [];
 let dataDoneDesk = [];
 let dataDeletedDesk = []
 let uniqueId = -1;
-let queueProgress = -1;
-let queueDone = -1;
-let queueDeleted = -1;
 
 function createId(){
     uniqueId++
     return uniqueId
 }
 
-function createDesks(deskType){
-    if(deskType === 'toDoDesk'){
-        toDoDesk.innerHTML = `Список задач`;
-        dataToDoDesk.forEach(arrayElement =>{
-            if (arrayElement.changingModeOn === true){
-                // toDoDesk.innerHTML +=`<div class="card">
-                // <input id="task-name-input">
-                // <input id="task-description-input">
-                // <button class ='btn-change', id="${arrayElement.id}">✔</button>
-                // <button class ='btn-delete', id="${arrayElement.id}">🗑️</button>
-                // </div>`
-                // let taskNameInput = document.querySelector('#task-name-input')
-                // taskNameInput.value = arrayElement.taskName;
-                // console.log(taskNameInput.value)
-                // let taskDescriptionInput = document.querySelector('#task-description-input')
-                // taskDescriptionInput.value = arrayElement.taskDescription
-            } else {
-                toDoDesk.innerHTML +=`<div class="card">
-                <p>${arrayElement.taskName}</p>
-                <p>${arrayElement.taskDescription}</p>
-                <button class ='btn-edit', id="${arrayElement.id}">✍</button>
-                <button class ='btn-next', id="${arrayElement.id}">➱</button>
-                <button class ='btn-delete', id="${arrayElement.id}">🗑️</button>
-                </div>`
-            }            
-        })
-    } else if (deskType === 'inProgressDesk'){
-        inProgressDesk.innerHTML = `Задачи в процессе`;
-        dataInProgressDesk.forEach(arrayElement =>{
-            inProgressDesk.innerHTML +=`<div class="card">
-            <p>${arrayElement.taskName}</p>
-            <p>${arrayElement.taskDescription}</p>
-            <button class ='btn-edit', id="${arrayElement.id}">✍</button>
-            <button class ='btn-next', id="${arrayElement.id}">➱</button>
-            <button class ='btn-delete', id="${arrayElement.id}">🗑️</button>
-            </div>`
-        })
-    } else if (deskType === 'doneDesk'){
-        doneDesk.innerHTML = `Выполненные задачи`;
-        dataDoneDesk.forEach(arrayElement =>{
-            doneDesk.innerHTML +=`<div class="card">
-            <p>${arrayElement.taskName}</p>
-            <p>${arrayElement.taskDescription}</p>
-            <button class ='btn-edit', id="${arrayElement.id}">✍</button>
-            <button class ='btn-delete', id="${arrayElement.id}">🗑️</button>
-            </div>`
-        })
+function createDesks(dataType, deskType, elementToEdit){
+    deskType.innerHTML = ``
+    dataType.forEach(arrayElement => {
+        // let elementToEdit = dataType.findIndex(item => item.id == id)
+        let taskName = `<p class ='task-n'>${arrayElement.taskName}</p>`;
+        let taskDescription = `<p class ='task-desc'>${arrayElement.taskDescription}</p>`;
+        let btnEdit = `<button class ='btn-edit', id="${arrayElement.id}">✍</button>`;
+        let btnNext = `<button class ='btn-next', id="${arrayElement.id}">➱</button>`;
+        let btnDelete = `<button class ='btn-delete', id="${arrayElement.id}">🗑️</button>`;
 
-    } else if (deskType === `deletedDesk`){
-        console.log('!')
-        deletedDesk.innerHTML = `Удаленные задачи`;
-        dataDeletedDesk.forEach(arrayElement =>{
-            deletedDesk.innerHTML +=`<div class="card">
-            <p>${arrayElement.taskName}</p>
-            <p>${arrayElement.taskDescription}</p>
-            <button class ='btn-erase', id="${arrayElement.id}">❌</button>
-            </div>`
-        })
-    }
+        if(dataType == dataDeletedDesk){
+            btnNext = ``;
+            btnEdit = ``;
+            btnDelete = `<button class ='btn-erase', id="${arrayElement.id}">❌</button>`;
+        } 
+
+        if(dataType == dataDoneDesk){
+            btnNext = ``;
+        } 
+
+        if (arrayElement.changingModeOn == true){
+            // let tn = cardToEdit.querySelector('.tn')
+            // let td = cardToEdit.querySelector('.td')
+            // let taskNameValue = tn.querySelector('.task-n').textContent
+            // let taskDescriptionValue = td.querySelector('.task-desc').textContent
+            // tn.innerHTML = `<input class = 'input-task-name'>`
+            // td.innerHTML = `<input class = 'input-description-name'>`
+            // inputTaskNameValue = cardToEdit.querySelector('.task-n').textContent
+            // inputDescriptionValue = cardToEdit.querySelector('.task-desc').textContent
+            taskName = `<input class = 'input-task-name', id = "${arrayElement.id}">`
+            taskDescription = `<input class = 'input-task-description', id = "${arrayElement.id}">`
+            btnNext = ``;
+            btnDelete = ``;
+        
+        }
+
+        deskType.innerHTML += `<div class="card", id = "${arrayElement.id}">
+        <div class ='tn'>${taskName}</div> 
+        <div class ='td'>${taskDescription}</div> 
+        ${btnEdit}
+        ${btnNext}
+        ${btnDelete} 
+        </div>`
+
+        if(arrayElement.changingModeOn == true){
+            // let inputName = document.querySelector('.input-task-name')
+            // let inputDescription = document.querySelector('.input-task-description')
+            // console.log(inputName)
+            // inputName.value = arrayElement.taskName
+            // inputDescription.value = arrayElement.taskDescription 
+            // console.log(inputName.value)
+
+            
+            let x = deskType.querySelector('.input-task-name')
+            let y = deskType.querySelector('.input-task-description')
+            x.value = arrayElement.taskName
+            y.value = arrayElement.taskDescription 
+            console.log(x.value)
+            console.log(y.value)
+
+            // let x = [...deskType.querySelectorAll('.input-task-name')]
+            // x[0].value = 15
+            // console.log(x[0].value)
+        }  
+    })    
 }
 
 function addDataToDoDesk(taskNameValue, taskDescriptionValue){
@@ -97,34 +100,31 @@ function moveData(id, dataFrom, dataTo){
     dataFrom.splice(elementToMove, 1)  
 }
 
-function editCard(id, dataToEdit, flag){
-    let elementToEdit = dataToEdit.findIndex(item => item.id == id)
-    if(flag){
-        dataToEdit[elementToEdit].changingModeOn = true 
-    } else {
-        dataToEdit[elementToEdit].changingModeOn = false
-    }
+
+function editCard(id, dataType, deskType){
+    let elementToEdit = dataType.findIndex(item => item.id == id)
+    dataType.forEach(arrayElement => {
+        arrayElement.changingModeOn = false
+    })
+    createDesks(dataType, deskType)
+    dataType[elementToEdit].changingModeOn = true
+    createDesks(dataType, deskType)
     
-    console.log(dataToEdit)
-
 }
-
-
 
 
 btnSubmit.addEventListener('click', (event) =>{
     event.preventDefault();
     addDataToDoDesk(taskName.value, taskDescription.value)
-    createDesks('toDoDesk');
+    createDesks(dataToDoDesk, toDoDesk);
 })
-
 
 desk.addEventListener('click', (event) =>{
     
     if(event.target.closest('.btn-edit')){
         if(event.target.closest('#to-do-desk')){
-            editCard((event.target.closest('.btn-edit').id), dataToDoDesk, true)
-            createDesks('toDoDesk')
+            editCard((event.target.closest('.btn-edit').id), dataToDoDesk, toDoDesk)
+            
         } else if (event.target.closest('#in-progress-desk')){
             editCard((event.target.closest('.btn-edit').id), dataInProgressDesk)
         } else if (event.target.closest('#done-desk')){
@@ -136,27 +136,27 @@ desk.addEventListener('click', (event) =>{
     } else if (event.target.closest('.btn-next')){
         if(event.target.closest('#to-do-desk')){ 
             moveData((event.target.closest('.btn-next').id), dataToDoDesk, dataInProgressDesk)
-            createDesks('toDoDesk');
-            createDesks('inProgressDesk')
+            createDesks(dataToDoDesk, toDoDesk);
+            createDesks(dataInProgressDesk, inProgressDesk);
         } else if (event.target.closest('#in-progress-desk')){
             moveData((event.target.closest('.btn-next').id), dataInProgressDesk, dataDoneDesk)
-            createDesks('inProgressDesk')
-            createDesks('doneDesk')  
+            createDesks(dataInProgressDesk, inProgressDesk);
+            createDesks(dataDoneDesk, doneDesk)  
         } 
 
     } else if (event.target.closest('.btn-delete')){
         if(event.target.closest('#to-do-desk')){
             moveData(event.target.closest('.btn-delete').id, dataToDoDesk, dataDeletedDesk)
-            createDesks('toDoDesk')
-            createDesks('deletedDesk')
+            createDesks(dataToDoDesk, toDoDesk);
+            createDesks(dataDeletedDesk, deletedDesk)
         } else if (event.target.closest('#in-progress-desk')){
             moveData(event.target.closest('.btn-delete').id, dataInProgressDesk, dataDeletedDesk)
-            createDesks('inProgressDesk')
-            createDesks('deletedDesk')
+            createDesks(dataInProgressDesk, inProgressDesk);
+            createDesks(dataDeletedDesk, deletedDesk)
         } else if (event.target.closest('#done-desk')){
             moveData(event.target.closest('.btn-delete').id, dataDoneDesk, dataDeletedDesk)
-            createDesks('doneDesk')
-            createDesks('deletedDesk')
+            createDesks(dataDoneDesk, doneDesk)  
+            createDesks(dataDeletedDesk, deletedDesk)
         } 
 
     } else if (event.target.closest('.btn-erase')){
@@ -176,3 +176,21 @@ desk.addEventListener('click', (event) =>{
 
 
 
+// const displayList = (data, listNode) => {
+//     listNode.innerHTML = "";
+//     data[listNode.id].forEach((el) => {
+//       listNode.innerHTML += `<li class="list__item">
+//       <h3 class="item__title">${el.title}</h3>
+//       <p class="item__description">${el.desc}</p>
+//       <div class="icon-wrapper">     
+//         ${
+//           listNode.id === "deleted"
+//             ? <img class="icon arrow reverse"  src="images/arrow.svg" alt="arrow" />
+//             : `<img class="icon arrow"  src="images/arrow.svg" alt="arrow" />
+//                <img class="icon pencil" src="images/pencil.svg" alt="pencil" />
+//                <img class="icon basket" src="images/trash.svg" alt="basket" />`
+//         }
+//       </div>
+//     </li>`;
+//     });
+//   };
